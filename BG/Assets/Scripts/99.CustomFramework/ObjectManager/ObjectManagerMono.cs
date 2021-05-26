@@ -9,6 +9,11 @@ public class ObjectManagerMono : MonoBehaviour {
     }
 
 
+    void Start() {
+        DontDestroyOnLoad(gameObject);
+    }
+
+
     void FixedUpdate() {
         ObjectManager.FixedUpdate();
     }
