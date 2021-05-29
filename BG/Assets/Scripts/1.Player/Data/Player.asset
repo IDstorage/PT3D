@@ -15,4 +15,4 @@ MonoBehaviour:
   moveSpeed: 5
   mouseSpeedHorizontal: 180
   mouseSpeedVertical: 180
-  pointDistance: 5
+  pointDistance: 12.5

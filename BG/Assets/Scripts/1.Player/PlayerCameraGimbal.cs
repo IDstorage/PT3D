@@ -20,6 +20,11 @@ public class PlayerCameraGimbal : CustomBehaviour {
     [SerializeField] Vector3 cameraEulerAngle;
 
 
+    [Space(10), SerializeField] bool lockHorizontal = false;
+    [SerializeField] bool lockVertical = false;
+    [SerializeField] bool disableCamBlocking = false;
+
+
     public float AzimuthValue { get; set; } = -180F;
     public float ElevationValue { get; set; } = 55F;
 
@@ -35,6 +40,12 @@ public class PlayerCameraGimbal : CustomBehaviour {
     }
 
     public override void OnFixedUpdate() {
+        flexibleMainRootLen = mainRootLength;
+
+        if (!disableCamBlocking) RaycastCamera();
+    }
+
+    void RaycastCamera() {
         bool hasObstacle = Physics.Raycast(target.transform.position, mainRootVector, out cameraBackHit, mainRootLength);
         if (hasObstacle) {
             flexibleMainRootLen = cameraBackHit.distance;
@@ -52,8 +63,12 @@ public class PlayerCameraGimbal : CustomBehaviour {
         float mouseH = -Input.GetAxis("Mouse X");
         float mouseV = -Input.GetAxis("Mouse Y");
 
-        AzimuthValue += mouseH * setting.MouseSpeedHorizontal * Time.deltaTime;
-        ElevationValue = Mathf.Clamp(ElevationValue + mouseV * setting.MouseSpeedVertical * Time.deltaTime, 30F, 100F);
+        if (!lockHorizontal) {
+            AzimuthValue += mouseH * setting.MouseSpeedHorizontal * Time.deltaTime;
+        }
+        if (!lockVertical) {
+            ElevationValue = Mathf.Clamp(ElevationValue + mouseV * setting.MouseSpeedVertical * Time.deltaTime, 25F, 120F);
+        }
         
         mainRootVector.x = Mathf.Sin(ElevationValue * Mathf.Deg2Rad) * Mathf.Sin(AzimuthValue * Mathf.Deg2Rad);
         mainRootVector.y = Mathf.Cos(ElevationValue * Mathf.Deg2Rad);
@@ -89,13 +104,13 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
 
     void CalculateViewPoint() {
-        float radian = (-AzimuthValue - 90F) * Mathf.Deg2Rad;
+        float radAzi = (-AzimuthValue - 90F) * Mathf.Deg2Rad;
+        float radElv = (ElevationValue - 90F) * Mathf.Deg2Rad;
 
-        viewPoint.x = Mathf.Cos(radian);
-        viewPoint.y = 0F;
-        viewPoint.z = Mathf.Sin(radian);
+        viewPoint.x = Mathf.Cos(radAzi);
+        viewPoint.y = Mathf.Sin(radElv);
+        viewPoint.z = Mathf.Sin(radAzi);
 
         viewPoint = target.transform.position + viewPoint * setting.PointDistance;
     }
-
 }

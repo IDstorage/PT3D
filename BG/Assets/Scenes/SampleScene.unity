@@ -169,6 +169,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setting: {fileID: 11400000, guid: cdbab76dc72416845a5ff765d28e461a, type: 2}
   root: {fileID: 303941130}
+  rigid: {fileID: 0}
+  controller: {fileID: 303941132}
   gimbal: {fileID: 1855970549}
   top: {fileID: 936272160}
   middle: {fileID: 1709861318}
@@ -183,6 +185,7 @@ GameObject:
   m_Component:
   - component: {fileID: 303941131}
   - component: {fileID: 303941130}
+  - component: {fileID: 303941132}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -218,6 +221,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &303941132
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303941129}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 0.5
+  m_Radius: 0.717
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.29, z: 0}
 --- !u!1 &594023101
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,7 +566,7 @@ Camera:
     height: 1
   near clip plane: 0.15
   far clip plane: 1000
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -603,7 +624,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494403613}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bc27709fe34cad443a6893c95bec7039, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -740,7 +761,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1696791595}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bc27709fe34cad443a6893c95bec7039, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -946,10 +967,13 @@ MonoBehaviour:
   setting: {fileID: 11400000, guid: cdbab76dc72416845a5ff765d28e461a, type: 2}
   target: {fileID: 1855970549}
   cam: {fileID: 963194227}
-  subBranchVector: {x: 1, y: 0, z: 0}
+  subBranchVector: {x: 1, y: 0.5, z: 0}
   mainRootLength: 2
   subBranchLength: 1.5
   cameraEulerAngle: {x: 0, y: 0, z: 0}
+  lockHorizontal: 0
+  lockVertical: 0
+  disableCamBlocking: 1
 --- !u!1 &1923137773
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,7 +1000,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1923137773}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: bc27709fe34cad443a6893c95bec7039, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2

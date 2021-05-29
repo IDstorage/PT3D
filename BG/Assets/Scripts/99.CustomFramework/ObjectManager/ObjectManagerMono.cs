@@ -6,6 +6,8 @@ public class ObjectManagerMono : MonoBehaviour {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void AfterSceneLoaded() {
         QualitySettings.vSyncCount = 0;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
 
