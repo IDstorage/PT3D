@@ -9,7 +9,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
     [SerializeField] Camera cam;
 
     Vector3 mainRootVector;
-    Vector3 subBranchVector;
+    public Vector3 subBranchVector;
     Quaternion cameraQuat;
 
     [SerializeField] float mainRootLength;
@@ -20,39 +20,46 @@ public class PlayerCameraGimbal : CustomBehaviour {
     [SerializeField] float mouseSpeedVertical = 1F;
 
 
-    float azimuthValue = -180F, elevationValue = 90F;
+    public float AzimuthValue { get; set; } = -180F;
+    public float ElevationValue { get; set; } = 55F;
+
+    float flexibleMainRootLen;
+
+    RaycastHit cameraBackHit;
 
 
     public override void OnStart() {
         mainRootVector = -target.transform.forward;
-        subBranchVector = Vector3.up;
         cameraQuat = Quaternion.Euler(cameraEulerAngle);
+    }
+
+    public override void OnFixedUpdate() {
+        bool hasObstacle = Physics.Raycast(target.transform.position, mainRootVector, out cameraBackHit, mainRootLength);
+        if (hasObstacle) {
+            flexibleMainRootLen = cameraBackHit.distance;
+        }
+        else {
+            flexibleMainRootLen = mainRootLength;
+        }
     }
 
     public override void OnUpdate() {
         float mouseH = -Input.GetAxis("Mouse X");
         float mouseV = -Input.GetAxis("Mouse Y");
 
-        azimuthValue = Add(azimuthValue, mouseH * mouseSpeedHorizontal * Time.deltaTime);
-        elevationValue = Mathf.Clamp(Add(elevationValue, mouseV * mouseSpeedVertical * Time.deltaTime), 20F, 160F);
+        AzimuthValue += mouseH * mouseSpeedHorizontal * Time.deltaTime;
+        ElevationValue = Mathf.Clamp(ElevationValue + mouseV * mouseSpeedVertical * Time.deltaTime, 30F, 100F);
         
-        mainRootVector.x = Mathf.Sin(elevationValue * Mathf.Deg2Rad) * Mathf.Sin(azimuthValue * Mathf.Deg2Rad);
-        mainRootVector.y = Mathf.Cos(elevationValue * Mathf.Deg2Rad);
-        mainRootVector.z = Mathf.Sin(elevationValue * Mathf.Deg2Rad) * Mathf.Cos(azimuthValue * Mathf.Deg2Rad);
+        mainRootVector.x = Mathf.Sin(ElevationValue * Mathf.Deg2Rad) * Mathf.Sin(AzimuthValue * Mathf.Deg2Rad);
+        mainRootVector.y = Mathf.Cos(ElevationValue * Mathf.Deg2Rad);
+        mainRootVector.z = Mathf.Sin(ElevationValue * Mathf.Deg2Rad) * Mathf.Cos(AzimuthValue * Mathf.Deg2Rad);
 
         // Apply
-        cam.transform.position = target.transform.position + (mainRootVector * mainRootLength + subBranchVector * subBranchLength);
+        cam.transform.position 
+            = target.transform.position + (mainRootVector * flexibleMainRootLen + subBranchVector * subBranchLength);
 
-        cameraQuat = Quaternion.LookRotation(target.transform.position - cam.transform.position);
+        cameraQuat = Quaternion.LookRotation((target.transform.position + target.transform.forward) - cam.transform.position);
         cam.transform.rotation = cameraQuat;
-    }
-
-    float Add(float origin, float additional) {
-        // 1/180 == 0.00555...
-        origin += additional;// * 0.00556F;
-        //if (origin >= 360F) origin -= 360F;
-        //else if (origin <= -360F) origin += 360F;
-        return origin;
     }
 
 }
