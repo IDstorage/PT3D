@@ -167,6 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8c0274240987be43a197e27643d2452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  setting: {fileID: 11400000, guid: cdbab76dc72416845a5ff765d28e461a, type: 2}
+  root: {fileID: 303941130}
+  gimbal: {fileID: 1855970549}
   top: {fileID: 936272160}
   middle: {fileID: 1709861318}
   bottom: {fileID: 594023105}
@@ -179,6 +182,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 303941131}
+  - component: {fileID: 303941130}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -186,6 +190,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &303941130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303941129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a44e95a632b11148a74054ce6c3704b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &303941131
 Transform:
   m_ObjectHideFlags: 0
@@ -927,14 +943,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6725e583a841e469036852e36dbbcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  setting: {fileID: 11400000, guid: cdbab76dc72416845a5ff765d28e461a, type: 2}
   target: {fileID: 1855970549}
   cam: {fileID: 963194227}
-  subBranchVector: {x: 0, y: 0, z: 0}
-  mainRootLength: 4
-  subBranchLength: 0
+  subBranchVector: {x: 1, y: 0, z: 0}
+  mainRootLength: 2
+  subBranchLength: 1.5
   cameraEulerAngle: {x: 0, y: 0, z: 0}
-  mouseSpeedHorizontal: 180
-  mouseSpeedVertical: 180
 --- !u!1 &1923137773
 GameObject:
   m_ObjectHideFlags: 0
