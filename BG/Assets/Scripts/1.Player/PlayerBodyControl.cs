@@ -30,7 +30,9 @@ public class PlayerBodyControl : CustomBehaviour {
         forwardVector.y = 0F;
         forwardVector.z = Mathf.Sin(radian);
 
-        transform.rotation = Quaternion.LookRotation(forwardVector);
+        if (!Input.GetKeyDown(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKeyUp(KeyCode.LeftAlt)) {
+            transform.rotation = Quaternion.LookRotation(forwardVector);
+        }
 
         float hSpeed = Input.GetAxisRaw("Horizontal");
         float vSpeed = Input.GetAxisRaw("Vertical");

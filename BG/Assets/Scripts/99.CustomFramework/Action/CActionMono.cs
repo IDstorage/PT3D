@@ -41,6 +41,7 @@ namespace CustomFramework {
                 childList[i].onAfterStep?.Invoke();
                 childList[i].SmoothComplete();
                 childList[i].onComplete?.Invoke();
+                childList[i].isPlaying = false;
                 childList.RemoveAt(i--);
             }
         }

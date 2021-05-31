@@ -14,7 +14,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
     Vector3 mainRootVector;
     public Vector3 subBranchVector;
     Quaternion cameraQuat;
-    Vector3 viewPoint;
+    [System.NonSerialized] public Vector3 viewPoint;
 
     [SerializeField] float mainRootLength;
     [SerializeField] float subBranchLength;
@@ -28,6 +28,8 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
     public float AzimuthValue { get; set; } = -180F;
     public float ElevationValue { get; set; } = 55F;
+
+    float cachedAzimuth, cachedElevation;
 
     float flexibleMainRootLen;
 
@@ -84,6 +86,15 @@ public class PlayerCameraGimbal : CustomBehaviour {
         CalculateViewPoint();
         cameraQuat = Quaternion.LookRotation(viewPoint - camPivot.transform.position);
         camPivot.transform.rotation = cameraQuat;
+
+
+        if (Input.GetKeyDown(KeyCode.LeftAlt)) {
+            cachedAzimuth = AzimuthValue;
+            cachedElevation = ElevationValue;
+        } else if (Input.GetKeyUp(KeyCode.LeftAlt)) {
+            AzimuthValue = cachedAzimuth;
+            ElevationValue = cachedElevation;
+        }
 
 
 #if UNITY_EDITOR

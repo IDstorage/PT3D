@@ -92,7 +92,7 @@ namespace CustomFramework {
         }
 
         void Stop() {
-
+            isPlaying = false;
         }
 
         public static void Stop(CAction act) {
@@ -100,6 +100,7 @@ namespace CustomFramework {
         }
 
         void Play() {
+            isPlaying = true;
             CActionMono.Instance.AddChild(this);
         }
 
@@ -169,6 +170,67 @@ namespace CustomFramework {
         }
     }
 
+    public class CLocalMoveTo : CAction {
+        Transform target;
+
+        Vector3 startPosition, endPosition;
+        EEaseAction easeAction;
+
+        public static CLocalMoveTo Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
+            CLocalMoveTo act = new CLocalMoveTo();
+            act.target = target;
+            act.endPosition = end;
+            act.duration = time;
+            act.easeAction = ease;
+            return act;
+        }
+
+
+        float timeCount = 0F;
+
+        public override bool Execute(float dt) {
+            if (timeCount < dt) startPosition = target.transform.localPosition;
+            target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
+            timeCount += dt;
+            return timeCount > duration;
+        }
+        public override void SmoothComplete() {
+            target.transform.localPosition = endPosition;
+        }
+    }
+
+    public class CLocalMoveBy : CAction {
+        Transform target;
+
+        Vector3 startPosition, endPosition, deltaVector;
+        EEaseAction easeAction;
+
+        public static CLocalMoveBy Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
+            CLocalMoveBy act = new CLocalMoveBy();
+            act.target = target;
+            act.deltaVector = end;
+            act.duration = time;
+            act.easeAction = ease;
+            return act;
+        }
+
+
+        float timeCount = 0F;
+
+        public override bool Execute(float dt) {
+            if (timeCount < dt) {
+                startPosition = target.transform.localPosition;
+                endPosition = startPosition + deltaVector;
+            }
+            target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
+            timeCount += dt;
+            return timeCount > duration;
+        }
+        public override void SmoothComplete() {
+            target.transform.localPosition = endPosition;
+        }
+    }
+
     public class CRotateTo : CAction {
         Transform target;
 
@@ -232,6 +294,69 @@ namespace CustomFramework {
         }
     }
 
+    public class CLocalRotateTo : CAction {
+        Transform target;
+
+        Vector3 startAngle, endAngle;
+        EEaseAction easeAction;
+
+        public static CLocalRotateTo Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
+            CLocalRotateTo act = new CLocalRotateTo();
+            act.target = target;
+            act.endAngle = end;
+            act.duration = time;
+            act.easeAction = ease;
+            return act;
+        }
+
+
+        float timeCount = 0F;
+
+        public override bool Execute(float dt) {
+            if (timeCount < dt) {
+                startAngle = target.transform.localEulerAngles;
+            }
+            target.transform.localRotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
+            timeCount += dt;
+            return timeCount > duration;
+        }
+        public override void SmoothComplete() {
+            target.transform.localRotation = Quaternion.Euler(endAngle);
+        }
+    }
+
+    public class CLocalRotateBy : CAction {
+        Transform target;
+
+        Vector3 startAngle, endAngle;
+        EEaseAction easeAction;
+
+        public static CLocalRotateBy Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
+            CLocalRotateBy act = new CLocalRotateBy();
+            act.target = target;
+            act.endAngle = end;
+            act.duration = time;
+            act.easeAction = ease;
+            return act;
+        }
+
+
+        float timeCount = 0F;
+
+        public override bool Execute(float dt) {
+            if (timeCount < dt) {
+                startAngle = target.transform.localEulerAngles;
+                endAngle = startAngle + endAngle;
+            }
+            target.transform.localRotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
+            timeCount += dt;
+            return timeCount > duration;
+        }
+        public override void SmoothComplete() {
+            target.transform.localRotation = Quaternion.Euler(endAngle);
+        }
+    }
+
 
     public class CCallFunc : CAction {
         public static CCallFunc Create(System.Action callback) {
@@ -291,6 +416,18 @@ namespace CustomFramework {
         }
 
 
+        public CSequence Clear() {
+            actionList.Clear();
+            onStart = null;
+            onBeforeStep = null;
+            onAfterStep = null;
+            onComplete = null;
+            timeCount = 0F;
+            globalDelay = 0F;
+            return this;
+        }
+
+
         public CSequence Append(CAction action) {
             if (isPlaying) return null; // To make error;
 
@@ -304,6 +441,18 @@ namespace CustomFramework {
                 action = action
             });
             return this;
+        }
+
+        public CSequence AppendInterval(float interval) {
+            if (isPlaying) return null;
+
+            return Append(CDelay.Create(interval));
+        }
+
+        public CSequence AppendCallback(System.Action callback) {
+            if (isPlaying) return null;
+
+            return Append(CCallFunc.Create(callback));
         }
 
         public CSequence Join(CAction action) {
