@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using CustomFramework;
+using CustomFramework.Extension;
+
 public class PlayerBodyControl : CustomBehaviour {
 
     [SerializeField] PlayerProfile setting;
@@ -19,7 +22,6 @@ public class PlayerBodyControl : CustomBehaviour {
 
     Vector3 forwardVector, movingDirection;
     float gravityValue = 0F;
-
 
     public override void OnUpdate() {
         float radian = (-gimbal.AzimuthValue - 90F) * Mathf.Deg2Rad;

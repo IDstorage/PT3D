@@ -6,14 +6,14 @@ using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Player Profile", menuName = "Data/Player Profile")]
 public class PlayerProfile : ScriptableObject {
-    public float MoveSpeed { get; set; } = 1F;
-    public float JumpPower { get; set; } = 1F;
-    public float GravityScale { get; set; } = 1F;
+    public float MoveSpeed = 1F;
+    public float JumpPower = 1F;
+    public float GravityScale = 1F;
 
-    public float MouseSpeedHorizontal { get; set; } = 1F;
-    public float MouseSpeedVertical { get; set; } = 1F;
-    public float PointDistance { get; set; } = 15F;
-    public Vector2 CameraLimit { get; set; } = new Vector2(25F, 120F);
+    public float MouseSpeedHorizontal = 1F;
+    public float MouseSpeedVertical = 1F;
+    public float PointDistance = 15F;
+    public Vector2 CameraLimit = new Vector2(25F, 120F);
 }
 
 #if UNITY_EDITOR

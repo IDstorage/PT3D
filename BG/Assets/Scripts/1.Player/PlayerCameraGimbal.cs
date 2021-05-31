@@ -8,6 +8,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
     [Space(10), SerializeField] CustomBehaviour target;
 
+    [SerializeField] CustomBehaviour camPivot;
     [SerializeField] Camera cam;
 
     Vector3 mainRootVector;
@@ -77,18 +78,18 @@ public class PlayerCameraGimbal : CustomBehaviour {
         Vector3 convertedSub = ConvertSubBranchVector();
 
         // Apply
-        cam.transform.position 
+        camPivot.transform.position 
             = target.transform.position + (mainRootVector * flexibleMainRootLen + convertedSub * subBranchLength);
 
         CalculateViewPoint();
-        cameraQuat = Quaternion.LookRotation(viewPoint - cam.transform.position);
-        cam.transform.rotation = cameraQuat;
+        cameraQuat = Quaternion.LookRotation(viewPoint - camPivot.transform.position);
+        camPivot.transform.rotation = cameraQuat;
 
 
 #if UNITY_EDITOR
         Debug.DrawLine(target.transform.position, target.transform.position + mainRootVector * flexibleMainRootLen, Color.red);
-        Debug.DrawLine(target.transform.position + mainRootVector * flexibleMainRootLen, cam.transform.position, Color.yellow);
-        Debug.DrawLine(cam.transform.position, viewPoint, Color.green);
+        Debug.DrawLine(target.transform.position + mainRootVector * flexibleMainRootLen, camPivot.transform.position, Color.yellow);
+        Debug.DrawLine(camPivot.transform.position, viewPoint, Color.green);
 #endif
     }
 
