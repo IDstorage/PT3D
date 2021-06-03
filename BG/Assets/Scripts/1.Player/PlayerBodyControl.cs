@@ -34,6 +34,8 @@ public class PlayerBodyControl : CustomBehaviour {
             transform.rotation = Quaternion.LookRotation(forwardVector);
         }
 
+        if (controller == null) return;
+
         float hSpeed = Input.GetAxisRaw("Horizontal");
         float vSpeed = Input.GetAxisRaw("Vertical");
 

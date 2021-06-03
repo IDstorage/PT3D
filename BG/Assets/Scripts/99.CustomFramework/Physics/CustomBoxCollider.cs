@@ -6,9 +6,15 @@ using CustomFramework;
 public class CustomBoxCollider : CustomCollider {
 
     public Vector3 size = Vector3.one;
-    Vector3[] axis = new Vector3[3];
+    [System.NonSerialized] public Vector3[] axis = new Vector3[3];
 
-    void UpdateAxis() {
+
+#if UNITY_EDITOR
+    Color boundaryColor = Color.green;
+#endif
+
+
+    public void UpdateAxis() {
         axis[0] = transform.right;
         axis[1] = transform.up;
         axis[2] = transform.forward;
@@ -17,14 +23,35 @@ public class CustomBoxCollider : CustomCollider {
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.green;
+        Gizmos.color = boundaryColor;
         Gizmos.matrix = Matrix4x4.TRS(Center, transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, size);
     }
 #endif
 
+    public override void OnCollidedEnter(CustomCollider other) {
+        base.OnCollidedEnter(other);
 
-    public static bool Collapse(CustomBoxCollider a, CustomBoxCollider b) {
+#if UNITY_EDITOR
+        boundaryColor = Color.red;
+#endif
+    }
+    public override void OnCollidedEnd(CustomCollider other) {
+        base.OnCollidedEnd(other);
+
+#if UNITY_EDITOR
+        boundaryColor = Color.green;
+#endif
+    }
+
+
+
+    public override bool Collide(CustomCollider other) {
+        if (!(other is CustomBoxCollider)) return false;
+        return Collide(this, other as CustomBoxCollider);
+    }
+
+    public static bool Collide(CustomBoxCollider a, CustomBoxCollider b) {
         a.UpdateAxis();
         b.UpdateAxis();
 
@@ -159,7 +186,7 @@ public class CustomBoxCollider : CustomCollider {
         return true;
     }
 
-    public static bool Collapse(CustomBoxCollider a, CustomSphereCollider b) {
+    public static bool Collide(CustomBoxCollider a, CustomSphereCollider b) {
         return true;
     }
 }

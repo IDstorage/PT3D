@@ -72,6 +72,7 @@ namespace CustomFramework {
 
 
         public static void FixedUpdate() {
+            CustomPhysics.Update();
             UpdateLoop(EFunctionType.FIXEDUPDATE);
         }
 
