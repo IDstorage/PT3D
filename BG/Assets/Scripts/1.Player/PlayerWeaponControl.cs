@@ -28,6 +28,7 @@ public class PlayerWeaponControl : CustomBehaviour {
 
     void EquipWeapon(EWeaponType type) {
         if (!canControl) return;
+        if (type == equippedWeapon) return;
 
         if (sequence == null) sequence = CSequence.Create();
         sequence.Clear();
@@ -63,16 +64,18 @@ public class PlayerWeaponControl : CustomBehaviour {
         if (Input.GetKeyDown(KeyCode.Alpha1)) EquipWeapon(EWeaponType.RIFLE);
         if (Input.GetKeyDown(KeyCode.Alpha2)) EquipWeapon(EWeaponType.CANNON);
         if (Input.GetKeyDown(KeyCode.Alpha3)) EquipWeapon(EWeaponType.NONE);
-
         ControlRotate();
     }
+
 
     void ControlRotate() {
         if (!canControl || currentWeapon == null) return;
 
         float radian = (90F - gimbal.ElevationValue) * Mathf.Deg2Rad;
 
-        
+        Vector3 euler = Quaternion.LookRotation(gimbal.viewPoint).eulerAngles;
+        euler.y = euler.z = 0F;
+        transform.localEulerAngles = euler;
     }
 
 }

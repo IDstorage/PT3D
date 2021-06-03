@@ -6,9 +6,21 @@ public class CustomBehaviour : MonoBehaviour {
 
     [System.NonSerialized] public bool cachedActiveFlag = false;
 
+    GameObject _gameObject = null;
+    new public GameObject gameObject {
+        get {
+            if (_gameObject == null) return base.gameObject;
+            return _gameObject;
+        }
+    }
 
-    [System.NonSerialized] new public GameObject gameObject;
-    [System.NonSerialized] new public Transform transform;
+    Transform _transform = null;
+    new public Transform transform {
+        get {
+            if (_transform == null) return base.transform;
+            return _transform;
+        }
+    }
 
 
     void Awake() {
@@ -20,8 +32,8 @@ public class CustomBehaviour : MonoBehaviour {
             return method.GetBaseDefinition().DeclaringType != method.DeclaringType;
         }
 
-        gameObject = base.gameObject;
-        transform = base.transform;
+        _gameObject = base.gameObject;
+        _transform = base.transform;
         
         var self = this;
 
