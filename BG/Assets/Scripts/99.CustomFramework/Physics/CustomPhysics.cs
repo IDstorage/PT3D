@@ -7,6 +7,18 @@ namespace CustomFramework {
     // 공간분할 하지 않은 상태
     public static class CustomPhysics {
 
+        public class PosIndex : IEqualityComparer<PosIndex> {
+            public int x, y, z;
+
+            bool IEqualityComparer<PosIndex>.Equals(PosIndex a, PosIndex b) {
+                return a.x == b.x && a.y == b.y && a.z == b.z;
+            }
+
+            int IEqualityComparer<PosIndex>.GetHashCode(PosIndex obj) {
+                return obj.x + obj.y + obj.z;
+            }
+        }
+
         static Unit colliderList = null;
         static Unit dynamicColliderList = null;
 
@@ -114,7 +126,6 @@ namespace CustomFramework {
                     cnt++;
                     bool result = search.collider.Collide(other.collider);
                     HandleCollision(search.collider, other.collider, result);
-                    //HandleCollision(other.collider, search.collider, result);
                     other = other.next;
                 }
                 search = search.next;
