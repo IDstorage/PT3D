@@ -8,6 +8,9 @@ public class CustomCollider : CustomBehaviour {
         CustomFramework.CustomPhysics.Add(this);
     }
 
+    [SerializeField] bool ignoreRaycast = false;
+    public bool IgnoreRaycast => ignoreRaycast;
+
     [SerializeField] bool isDynamic = false;
     public bool IsDynamic {
         get {
@@ -20,13 +23,23 @@ public class CustomCollider : CustomBehaviour {
         }
     }
 
-    public Vector3 center;
-
+    [SerializeField] Vector3 center;
     public Vector3 Center {
         get {
             return transform.position + transform.right * center.x + transform.up * center.y + transform.forward * center.z;
         }
     }
+
+    public Vector3 size = Vector3.one;
+
+    [System.NonSerialized] public Vector3[] axis = new Vector3[3];
+
+
+    protected CustomFramework.CustomPhysics.PosIndex index = new CustomFramework.CustomPhysics.PosIndex();
+    public CustomFramework.CustomPhysics.PosIndex Index => index;
+
+    public virtual void UpdateIndex() { }
+
 
     public HashSet<CustomCollider> collisionList = new HashSet<CustomCollider>();
 

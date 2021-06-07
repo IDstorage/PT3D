@@ -5,9 +5,6 @@ using CustomFramework;
 
 public class CustomBoxCollider : CustomCollider {
 
-    public Vector3 size = Vector3.one;
-    [System.NonSerialized] public Vector3[] axis = new Vector3[3];
-
 
 #if UNITY_EDITOR
     Color boundaryColor = Color.green;
@@ -20,12 +17,29 @@ public class CustomBoxCollider : CustomCollider {
         axis[2] = transform.forward;
     }
 
+    public override void UpdateIndex() {
+        if (transform == null) return;
+        index.x = (int)transform.position.x;
+        index.y = (int)transform.position.y;
+        index.z = (int)transform.position.z;
+        index.radius = (int)(Mathf.Max(size.x, size.y, size.z) / 2F) + 2;
+    }
+
 
 #if UNITY_EDITOR
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.yellow;
+        Gizmos.matrix = Matrix4x4.TRS(new Vector3(index.x, index.y, index.z), transform.rotation, Vector3.one);
+        Gizmos.DrawWireSphere(Vector3.zero, index.radius);
+    }
     private void OnDrawGizmosSelected() {
         Gizmos.color = boundaryColor;
         Gizmos.matrix = Matrix4x4.TRS(Center, transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, size);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.matrix = Matrix4x4.TRS(new Vector3(index.x, index.y, index.z), transform.rotation, Vector3.one);
+        Gizmos.DrawWireSphere(Vector3.zero, index.radius);
     }
 #endif
 

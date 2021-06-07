@@ -25,7 +25,15 @@ public class PlayerProfileEditor : Editor {
     static Dictionary<string, bool> foldCached = new Dictionary<string, bool>();
 
     public override void OnInspectorGUI() {
-        GUILayout.Space(10);
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Save", GUILayout.Width(200), GUILayout.Height(30))) {
+            EditorUtility.SetDirty(target);
+        }
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(50);
 
         if (profile == null) profile = target as PlayerProfile;
 

@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96d766d7f484eb84889c69b035a7ba55, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  mouseSpeedHorizontal: 180
-  mouseSpeedVertical: 180
-  pointDistance: 12.5
+  MoveSpeed: 5
+  JumpPower: 3
+  GravityScale: 1
+  MouseSpeedHorizontal: 360
+  MouseSpeedVertical: 360
+  PointDistance: 15
+  CameraLimit: {x: 25, y: 120}

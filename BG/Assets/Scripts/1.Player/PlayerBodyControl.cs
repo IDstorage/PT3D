@@ -24,6 +24,12 @@ public class PlayerBodyControl : CustomBehaviour {
     float gravityValue = 0F;
 
     public override void OnUpdate() {
+        if (Input.GetKeyDown(KeyCode.V)) {
+            CustomPhysics.Raycast(transform.position, transform.forward, 5F);
+            Debug.DrawRay(transform.position, transform.forward * 100F, Color.red, 2.0f);
+            //Debug.DrawLine(transform.position, transform.position + transform.forward * 5F, Color.red, 1.0f);
+        }
+
         float radian = (-gimbal.AzimuthValue - 90F) * Mathf.Deg2Rad;
 
         forwardVector.x = Mathf.Cos(radian);
