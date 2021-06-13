@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using CustomFramework;
 
-public class CustomBoxCollider : CustomCollider {
-
-
-#if UNITY_EDITOR
-    Color boundaryColor = Color.green;
-#endif
-
+public class CustomBoxCollider : CustomCollider { 
 
     public void UpdateAxis() {
         axis[0] = transform.right;
@@ -42,23 +36,6 @@ public class CustomBoxCollider : CustomCollider {
         Gizmos.DrawWireSphere(Vector3.zero, index.radius);
     }
 #endif
-
-    public override void OnCollidedEnter(CustomCollider other) {
-        base.OnCollidedEnter(other);
-
-#if UNITY_EDITOR
-        boundaryColor = Color.red;
-#endif
-    }
-    public override void OnCollidedEnd(CustomCollider other) {
-        base.OnCollidedEnd(other);
-
-#if UNITY_EDITOR
-        boundaryColor = Color.green;
-#endif
-    }
-
-
 
     public override bool Collide(CustomCollider other) {
         if (!(other is CustomBoxCollider)) return false;

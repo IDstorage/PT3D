@@ -7,6 +7,8 @@ using CustomFramework.Extension;
 
 public class PlayerBodyControl : CustomBehaviour {
 
+    [SerializeField] CustomBoxCollider coll;
+
     [SerializeField] PlayerProfile setting;
 
     [SerializeField, Space(10)] CustomBehaviour root;
@@ -23,13 +25,10 @@ public class PlayerBodyControl : CustomBehaviour {
     Vector3 forwardVector, movingDirection;
     float gravityValue = 0F;
 
-    public override void OnUpdate() {
-        if (Input.GetKeyDown(KeyCode.V)) {
-            CustomPhysics.Raycast(transform.position, transform.forward, 5F);
-            Debug.DrawRay(transform.position, transform.forward * 100F, Color.red, 2.0f);
-            //Debug.DrawLine(transform.position, transform.position + transform.forward * 5F, Color.red, 1.0f);
-        }
+    Quaternion moveRayRot = Quaternion.Euler(0F, 45F, 0F);
+    float moveRayDist = Mathf.Sqrt(2F) * 0.5f + 0.1f;
 
+    public override void OnUpdate() {
         float radian = (-gimbal.AzimuthValue - 90F) * Mathf.Deg2Rad;
 
         forwardVector.x = Mathf.Cos(radian);
@@ -40,37 +39,34 @@ public class PlayerBodyControl : CustomBehaviour {
             transform.rotation = Quaternion.LookRotation(forwardVector);
         }
 
-        if (controller == null) return;
-
         float hSpeed = Input.GetAxisRaw("Horizontal");
         float vSpeed = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            gravityValue = -setting.JumpPower;
-        }
-        else if (!controller.isGrounded) {
-            gravityValue += 9.8f * setting.GravityScale * Time.deltaTime;
-            if (gravityValue > 9.8f) gravityValue = 9.8f;
-        }
-        else {
-            gravityValue = 0F;
-        }
+        //if (Input.GetKeyDown(KeyCode.Space)) {
+        //    gravityValue = -setting.JumpPower;
+        //}
+        //else if (!controller.isGrounded) {
+        //    gravityValue += 9.8f * setting.GravityScale * Time.deltaTime;
+        //    if (gravityValue > 9.8f) gravityValue = 9.8f;
+        //}
+        //else {
+        //    gravityValue = 0F;
+        //}
 
         movingDirection = (transform.forward * vSpeed + transform.right * hSpeed).normalized + transform.up * -gravityValue;
-        
-        controller.Move(movingDirection * setting.MoveSpeed * Time.deltaTime);
+
+        if (CustomPhysics.Raycast(transform.position, movingDirection, moveRayDist) == null
+            && CustomPhysics.Raycast(transform.position, Quaternion.Inverse(moveRayRot) * movingDirection, moveRayDist) == null
+            && CustomPhysics.Raycast(transform.position, moveRayRot * movingDirection, moveRayDist) == null) {
+            root.transform.position += movingDirection * setting.MoveSpeed * Time.deltaTime;
+        }
 
 #if UNITY_EDITOR
         Debug.DrawLine(transform.position, transform.position + transform.forward);
+        Debug.DrawRay(transform.position, movingDirection * moveRayDist, Color.magenta);
+        Debug.DrawRay(transform.position, moveRayRot * movingDirection * moveRayDist, Color.magenta);
+        Debug.DrawRay(transform.position, Quaternion.Inverse(moveRayRot) * movingDirection * moveRayDist, Color.magenta);
 #endif
-    }
-
-    bool Collision(out RaycastHit hit) {
-#if UNITY_EDITOR
-        Debug.DrawLine(transform.position, transform.position + movingDirection);
-#endif
-
-        return Physics.Raycast(transform.position, movingDirection, out hit, 0.5f * Mathf.Sqrt(2F));
     }
 
 }

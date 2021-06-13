@@ -41,11 +41,24 @@ public class CustomCollider : CustomBehaviour {
     public virtual void UpdateIndex() { }
 
 
+#if UNITY_EDITOR
+    protected Color boundaryColor = Color.green;
+#endif
+
     public HashSet<CustomCollider> collisionList = new HashSet<CustomCollider>();
 
-    public virtual void OnCollidedEnter(CustomCollider other) { }
-    public virtual void OnCollidedStay(CustomCollider other) { }
-    public virtual void OnCollidedEnd(CustomCollider other) { }
+    public delegate void OnCollideDele(CustomCollider other);
+    public OnCollideDele OnCollidedEnter = new OnCollideDele(o => {
+#if UNITY_EDITOR
+        o.boundaryColor = Color.red;
+#endif
+    });
+    public OnCollideDele OnCollidedStay = new OnCollideDele(o => { });
+    public OnCollideDele OnCollidedEnd = new OnCollideDele(o => {
+#if UNITY_EDITOR
+        o.boundaryColor = Color.green;
+#endif
+    });
 
 
 
