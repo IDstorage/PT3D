@@ -42,24 +42,26 @@ public class PlayerBodyControl : CustomBehaviour {
         float hSpeed = Input.GetAxisRaw("Horizontal");
         float vSpeed = Input.GetAxisRaw("Vertical");
 
-        //if (Input.GetKeyDown(KeyCode.Space)) {
-        //    gravityValue = -setting.JumpPower;
-        //}
-        //else if (!controller.isGrounded) {
-        //    gravityValue += 9.8f * setting.GravityScale * Time.deltaTime;
-        //    if (gravityValue > 9.8f) gravityValue = 9.8f;
-        //}
-        //else {
-        //    gravityValue = 0F;
-        //}
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            gravityValue = -setting.JumpPower;
+        }
+        else if (CustomPhysics.Raycast(transform.position, -transform.up, 0.5f) == null) {
+            gravityValue += 9.8f * setting.GravityScale * Time.deltaTime;
+            if (gravityValue > 9.8f) gravityValue = 9.8f;
+        }
+        else {
+            gravityValue = 0F;
+        }
 
-        movingDirection = (transform.forward * vSpeed + transform.right * hSpeed).normalized + transform.up * -gravityValue;
+        movingDirection = (transform.forward * vSpeed + transform.right * hSpeed).normalized;
 
         if (CustomPhysics.Raycast(transform.position, movingDirection, moveRayDist) == null
             && CustomPhysics.Raycast(transform.position, Quaternion.Inverse(moveRayRot) * movingDirection, moveRayDist) == null
             && CustomPhysics.Raycast(transform.position, moveRayRot * movingDirection, moveRayDist) == null) {
             root.transform.position += movingDirection * setting.MoveSpeed * Time.deltaTime;
         }
+
+        root.transform.position += -transform.up * gravityValue * Time.deltaTime;
 
 #if UNITY_EDITOR
         Debug.DrawLine(transform.position, transform.position + transform.forward);
