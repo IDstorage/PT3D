@@ -80,12 +80,12 @@ public class PlayerCameraGimbal : CustomBehaviour {
         Vector3 convertedSub = ConvertSubBranchVector();
 
         // Apply
-        camPivot.transform.position 
-            = target.transform.position + (mainRootVector * flexibleMainRootLen + convertedSub * subBranchLength);
+        camPivot.transform.localPosition 
+            = target.transform.localPosition + (mainRootVector * flexibleMainRootLen + convertedSub * subBranchLength);
 
         CalculateViewPoint();
         cameraQuat = Quaternion.LookRotation(viewPoint - camPivot.transform.position);
-        camPivot.transform.rotation = cameraQuat;
+        camPivot.transform.localRotation = cameraQuat;
 
 
         if (Input.GetKeyDown(KeyCode.LeftAlt)) {
