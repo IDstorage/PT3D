@@ -70,9 +70,11 @@ namespace CustomFramework {
             return this;
         }
 
+        protected float timeCount = 0F;
+
+        public virtual void Init() { timeCount = 0F; }
         public virtual bool Execute(float dt) { return true; }
         public virtual void SmoothComplete() { }
-
 
 
         void Pause() {
@@ -124,16 +126,17 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startPosition = target.transform.position;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) startPosition = target.transform.position;
             target.transform.position = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.position = endPosition;
         }
     }
@@ -153,19 +156,18 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startPosition = target.transform.position;
+            endPosition = startPosition + deltaVector;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startPosition = target.transform.position;
-                endPosition = startPosition + deltaVector;
-            }
             target.transform.position = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.position = endPosition;
         }
     }
@@ -185,16 +187,17 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startPosition = target.transform.localPosition;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) startPosition = target.transform.localPosition;
             target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.localPosition = endPosition;
         }
     }
@@ -214,19 +217,18 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startPosition = target.transform.localPosition;
+            endPosition = startPosition + deltaVector;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startPosition = target.transform.localPosition;
-                endPosition = startPosition + deltaVector;
-            }
             target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, GetEaseScale(easeAction, timeCount / duration));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.localPosition = endPosition;
         }
     }
@@ -246,18 +248,17 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startAngle = target.transform.eulerAngles;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startAngle = target.transform.eulerAngles;
-            }
             target.transform.rotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.rotation = Quaternion.Euler(endAngle);
         }
     }
@@ -265,31 +266,30 @@ namespace CustomFramework {
     public class CRotateBy : CAction {
         Transform target;
 
-        Vector3 startAngle, endAngle;
+        Vector3 startAngle, endAngle, deltaAngle;
         EEaseAction easeAction;
 
         public static CRotateBy Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
             CRotateBy act = new CRotateBy();
             act.target = target;
-            act.endAngle = end;
+            act.deltaAngle = end;
             act.duration = time;
             act.easeAction = ease;
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startAngle = target.transform.eulerAngles;
+            endAngle = startAngle + deltaAngle;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startAngle = target.transform.eulerAngles;
-                endAngle = startAngle + endAngle;
-            }
             target.transform.rotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.rotation = Quaternion.Euler(endAngle);
         }
     }
@@ -309,18 +309,17 @@ namespace CustomFramework {
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startAngle = target.transform.localEulerAngles;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startAngle = target.transform.localEulerAngles;
-            }
             target.transform.localRotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.localRotation = Quaternion.Euler(endAngle);
         }
     }
@@ -328,31 +327,30 @@ namespace CustomFramework {
     public class CLocalRotateBy : CAction {
         Transform target;
 
-        Vector3 startAngle, endAngle;
+        Vector3 startAngle, endAngle, deltaAngle;
         EEaseAction easeAction;
 
         public static CLocalRotateBy Create(Transform target, Vector3 end, float time, EEaseAction ease = EEaseAction.LINEAR) {
             CLocalRotateBy act = new CLocalRotateBy();
             act.target = target;
-            act.endAngle = end;
+            act.deltaAngle = end;
             act.duration = time;
             act.easeAction = ease;
             return act;
         }
 
-
-        float timeCount = 0F;
-
+        public override void Init() {
+            base.Init();
+            startAngle = target.transform.localEulerAngles;
+            endAngle = startAngle + deltaAngle;
+        }
         public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                startAngle = target.transform.localEulerAngles;
-                endAngle = startAngle + endAngle;
-            }
             target.transform.localRotation = Quaternion.Euler(Vector3.Lerp(startAngle, endAngle, GetEaseScale(easeAction, timeCount / duration)));
             timeCount += dt;
             return timeCount > duration;
         }
         public override void SmoothComplete() {
+            base.SmoothComplete();
             target.transform.localRotation = Quaternion.Euler(endAngle);
         }
     }
@@ -369,8 +367,6 @@ namespace CustomFramework {
             return this;    // Block onComplete assignment
         }
 
-        float timeCount = 0F;
-
         public override bool Execute(float dt) {
             return true;
         }
@@ -382,8 +378,6 @@ namespace CustomFramework {
             act.duration = delay;
             return act;
         }
-
-        float timeCount = 0F;
 
         public override bool Execute(float dt) {
             timeCount += dt;
@@ -473,18 +467,14 @@ namespace CustomFramework {
             return this;
         }
 
-
-        float timeCount = 0F;
-
-        public override bool Execute(float dt) {
-            if (timeCount < dt) {
-                for (int i = 0; i < actionList.Count; ++i) {
-                    if (globalDelay > actionList[i].delay + actionList[i].action.duration) continue;
-                    globalDelay = actionList[i].delay + actionList[i].action.duration;
-                }
-                globalDelay += dt;
+        public override void Init() {
+            base.Init();
+            for (int i = 0; i < actionList.Count; ++i) {
+                if (globalDelay > actionList[i].delay + actionList[i].action.duration) continue;
+                globalDelay = actionList[i].delay + actionList[i].action.duration;
             }
-
+        }
+        public override bool Execute(float dt) {
             for (int i = 0; i < actionList.Count; ++i) {
                 if (actionList[i].delay <= 0F) {
                     Play(actionList[i].action);

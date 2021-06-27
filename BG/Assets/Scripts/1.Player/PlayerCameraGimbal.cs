@@ -10,10 +10,15 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
     [SerializeField] CustomBehaviour camPivot;
     [SerializeField] Camera cam;
+    public Camera PlayerCamera => cam;
 
     Vector3 mainRootVector;
     public Vector3 subBranchVector;
+
+    Vector3 cameraLocalPosition = Vector3.zero;
+    float cameraNormalizeSpeed = 1F;
     Quaternion cameraQuat;
+
     [System.NonSerialized] public Vector3 viewPoint;
 
     [SerializeField] float mainRootLength;
@@ -27,11 +32,11 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
 
     public float AzimuthValue { get; set; } = -180F;
-    public float ElevationValue { get; set; } = 55F;
+    public float ElevationValue { get; set; } = 80F;
 
     float cachedAzimuth, cachedElevation;
 
-    float flexibleMainRootLen;
+    float flexibleMainRootLen, flexibleSubBranchLen;
 
     RaycastHit cameraBackHit;
 
@@ -40,11 +45,11 @@ public class PlayerCameraGimbal : CustomBehaviour {
         mainRootVector = -target.transform.forward;
         subBranchVector.Normalize();
         cameraQuat = Quaternion.Euler(cameraEulerAngle);
+        flexibleMainRootLen = mainRootLength;
+        flexibleSubBranchLen = subBranchLength;
     }
 
     public override void OnFixedUpdate() {
-        flexibleMainRootLen = mainRootLength;
-
         if (!disableCamBlocking) RaycastCamera();
     }
 
@@ -63,14 +68,14 @@ public class PlayerCameraGimbal : CustomBehaviour {
     }
 
     public override void OnUpdate() {
-        float mouseH = -Input.GetAxis("Mouse X");
-        float mouseV = -Input.GetAxis("Mouse Y");
+        float mouseH = Input.GetAxis("Mouse X");
+        float mouseV = Input.GetAxis("Mouse Y");
 
         if (!lockHorizontal) {
             AzimuthValue += mouseH * setting.MouseSpeedHorizontal * Time.deltaTime;
         }
         if (!lockVertical) {
-            ElevationValue = Mathf.Clamp(ElevationValue + mouseV * setting.MouseSpeedVertical * Time.deltaTime, 25F, 120F);
+            ElevationValue = Mathf.Clamp(ElevationValue + mouseV * setting.MouseSpeedVertical * Time.deltaTime, setting.CameraLimit.x, setting.CameraLimit.y);
         }
         
         mainRootVector.x = Mathf.Sin(ElevationValue * Mathf.Deg2Rad) * Mathf.Sin(AzimuthValue * Mathf.Deg2Rad);
@@ -81,7 +86,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
         // Apply
         camPivot.transform.localPosition 
-            = target.transform.localPosition + (mainRootVector * flexibleMainRootLen + convertedSub * subBranchLength);
+            = target.transform.localPosition + (mainRootVector * flexibleMainRootLen + convertedSub * flexibleSubBranchLen);
 
         CalculateViewPoint();
         cameraQuat = Quaternion.LookRotation(viewPoint - camPivot.transform.position);
@@ -95,6 +100,18 @@ public class PlayerCameraGimbal : CustomBehaviour {
             AzimuthValue = cachedAzimuth;
             ElevationValue = cachedElevation;
         }
+
+
+        if (Input.GetMouseButton(1)) {
+            LerpHelper.Lerp(ref flexibleMainRootLen, 1F, 8.325f);
+            LerpHelper.Lerp(ref flexibleSubBranchLen, 1.2f, 2.5f);
+        } else {
+            LerpHelper.Lerp(ref flexibleMainRootLen, mainRootLength, 8.325f);
+            LerpHelper.Lerp(ref flexibleSubBranchLen, subBranchLength, 2.5f);
+        }
+
+        cam.transform.localPosition = cameraLocalPosition;
+        LerpHelper.Lerp(ref cameraLocalPosition, Vector3.zero, cameraNormalizeSpeed);
 
 
 #if UNITY_EDITOR
@@ -116,13 +133,19 @@ public class PlayerCameraGimbal : CustomBehaviour {
 
 
     void CalculateViewPoint() {
-        float radAzi = (-AzimuthValue - 90F) * Mathf.Deg2Rad;
-        float radElv = (ElevationValue - 90F) * Mathf.Deg2Rad;
+        float radAzi = (-AzimuthValue - 92.15F) * Mathf.Deg2Rad;
+        float radElv = (ElevationValue - 89F) * Mathf.Deg2Rad;
 
         viewPoint.x = Mathf.Cos(radAzi);
         viewPoint.y = Mathf.Sin(radElv);
         viewPoint.z = Mathf.Sin(radAzi);
 
         viewPoint = target.transform.position + viewPoint * setting.PointDistance;
+    }
+
+    
+    public void ReboundCamera(Vector3 dir, float scale = 1F) {
+        cameraLocalPosition = dir;
+        cameraNormalizeSpeed = scale;
     }
 }

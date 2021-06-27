@@ -48,13 +48,13 @@ public class CustomCollider : CustomBehaviour {
     public HashSet<CustomCollider> collisionList = new HashSet<CustomCollider>();
 
     public delegate void OnCollideDele(CustomCollider other);
-    public OnCollideDele OnCollidedEnter = new OnCollideDele(o => {
+    public OnCollideDele _OnCollidedEnter = new OnCollideDele(o => {
 #if UNITY_EDITOR
         o.boundaryColor = Color.red;
 #endif
     });
-    public OnCollideDele OnCollidedStay = new OnCollideDele(o => { });
-    public OnCollideDele OnCollidedEnd = new OnCollideDele(o => {
+    public OnCollideDele _OnCollidedStay = new OnCollideDele(o => { });
+    public OnCollideDele _OnCollidedEnd = new OnCollideDele(o => {
 #if UNITY_EDITOR
         o.boundaryColor = Color.green;
 #endif

@@ -43,8 +43,8 @@ public class PlayerBodyControl : CustomBehaviour {
         float hSpeed = Input.GetAxisRaw("Horizontal");
         float vSpeed = Input.GetAxisRaw("Vertical");
 
-        LerpUpdate(ref btSpeed, vSpeed, 5F);
-        LerpUpdate(ref btDir, hSpeed, 5F);
+        LerpHelper.Lerp(ref btSpeed, vSpeed, 5F);
+        LerpHelper.Lerp(ref btDir, hSpeed, 5F);
 
         animator.SetFloat("Speed", btSpeed);
         animator.SetFloat("Direction", btDir);
@@ -82,81 +82,66 @@ public class PlayerBodyControl : CustomBehaviour {
     }
 
 
-    void LerpUpdate(ref float targetV, float dest, float scale = 1F) {
-        float dt = Time.deltaTime * scale;
-        if (Mathf.Abs(dest - targetV) < dt) {
-            targetV = dest;
-            return;
-        }
+    //    void UpdateGravityWithSurface() {
+    //        var ground = SquarePlanet.Instance.transform;
 
-        if (targetV < dest) {
-            targetV += dt;
-        } else {
-            targetV -= dt;
-        }
-    }
+    //        Vector3 v = root.transform.position - ground.position;
+    //        v.x = Mathf.Clamp(v.x, -ground.lossyScale.x * 0.5f, ground.lossyScale.x * 0.5f);
+    //        v.y = Mathf.Clamp(v.y, -ground.lossyScale.y * 0.5f, ground.lossyScale.y * 0.5f);
+    //        v.z = Mathf.Clamp(v.z, -ground.lossyScale.z * 0.5f, ground.lossyScale.z * 0.5f);
 
+    //        v += ground.position;
 
-//    void UpdateGravityWithSurface() {
-//        var ground = SquarePlanet.Instance.transform;
+    //        Vector3 vu = root.transform.position - v;
+    //        vu.x *= Mathf.Abs(transform.up.x);
+    //        vu.y *= Mathf.Abs(transform.up.y);
+    //        vu.z *= Mathf.Abs(transform.up.z);
 
-//        Vector3 v = root.transform.position - ground.position;
-//        v.x = Mathf.Clamp(v.x, -ground.lossyScale.x * 0.5f, ground.lossyScale.x * 0.5f);
-//        v.y = Mathf.Clamp(v.y, -ground.lossyScale.y * 0.5f, ground.lossyScale.y * 0.5f);
-//        v.z = Mathf.Clamp(v.z, -ground.lossyScale.z * 0.5f, ground.lossyScale.z * 0.5f);
+    //        Vector3 dir = root.transform.position - v - vu;
 
-//        v += ground.position;
+    //#if UNITY_EDITOR
+    //        Debug.DrawRay(v, transform.up, Color.magenta);
+    //        Debug.DrawRay(v, dir.normalized, Color.cyan);
+    //#endif
 
-//        Vector3 vu = root.transform.position - v;
-//        vu.x *= Mathf.Abs(transform.up.x);
-//        vu.y *= Mathf.Abs(transform.up.y);
-//        vu.z *= Mathf.Abs(transform.up.z);
+    //        if (Input.GetKeyDown(KeyCode.Space)) {
+    //            canControl = false;
+    //            Debug.LogError(Quaternion.FromToRotation(transform.up, dir.normalized).eulerAngles);
+    //            StartCoroutine(
+    //                CoRotate(v,
+    //                        Quaternion.FromToRotation((root.transform.position - v).normalized, dir.normalized),
+    //                        Quaternion.FromToRotation(transform.up, dir.normalized)));
+    //        }
 
-//        Vector3 dir = root.transform.position - v - vu;
-
-//#if UNITY_EDITOR
-//        Debug.DrawRay(v, transform.up, Color.magenta);
-//        Debug.DrawRay(v, dir.normalized, Color.cyan);
-//#endif
-
-//        if (Input.GetKeyDown(KeyCode.Space)) {
-//            canControl = false;
-//            Debug.LogError(Quaternion.FromToRotation(transform.up, dir.normalized).eulerAngles);
-//            StartCoroutine(
-//                CoRotate(v,
-//                        Quaternion.FromToRotation((root.transform.position - v).normalized, dir.normalized),
-//                        Quaternion.FromToRotation(transform.up, dir.normalized)));
-//        }
-
-//        //if (CustomPhysics.Raycast())
-//    }
+    //        //if (CustomPhysics.Raycast())
+    //    }
 
 
-//    IEnumerator CoRotate(Vector3 origin, Quaternion dRot, Quaternion rot) {
-//        float time = 0F;
-//        float duration = 1F;
+    //    IEnumerator CoRotate(Vector3 origin, Quaternion dRot, Quaternion rot) {
+    //        float time = 0F;
+    //        float duration = 1F;
 
-//        Vector3 converted = root.transform.position - origin;
+    //        Vector3 converted = root.transform.position - origin;
 
-//        Quaternion qa = Quaternion.identity;
-//        Quaternion qb = dRot;
+    //        Quaternion qa = Quaternion.identity;
+    //        Quaternion qb = dRot;
 
-//        Vector3 oa = root.transform.rotation.eulerAngles;
-//        Vector3 ob = oa + rot.eulerAngles;
+    //        Vector3 oa = root.transform.rotation.eulerAngles;
+    //        Vector3 ob = oa + rot.eulerAngles;
 
-//        while (time < duration) {
-//            root.transform.position = Quaternion.Slerp(qa, qb, time / duration) * converted + origin;
-//            //root.transform.rotation = Quaternion.Slerp(ra, rb, time / duration);
-//            time += Time.deltaTime;
-//            yield return null;
-//        }
+    //        while (time < duration) {
+    //            root.transform.position = Quaternion.Slerp(qa, qb, time / duration) * converted + origin;
+    //            //root.transform.rotation = Quaternion.Slerp(ra, rb, time / duration);
+    //            time += Time.deltaTime;
+    //            yield return null;
+    //        }
 
-//        root.transform.position = qb * converted + origin;
-//        root.transform.rotation = Quaternion.Euler(ob);
+    //        root.transform.position = qb * converted + origin;
+    //        root.transform.rotation = Quaternion.Euler(ob);
 
-//        //root.transform.rotation = transform.rotation * rot;
+    //        //root.transform.rotation = transform.rotation * rot;
 
-//        canControl = true;
-//    }
+    //        canControl = true;
+    //    }
 
 }

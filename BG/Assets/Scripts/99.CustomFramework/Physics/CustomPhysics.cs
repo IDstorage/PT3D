@@ -137,16 +137,16 @@ namespace CustomFramework {
             void HandleAfterCollision(CustomCollider self, CustomCollider target, bool result) {
                 if (result) {
                     if (self.collisionList.Contains(target)) {
-                        if (self.OnCollidedStay != null) self.OnCollidedStay(target);
+                        if (self._OnCollidedStay != null) self._OnCollidedStay(target);
                     }
                     else {
                         self.collisionList.Add(target);
-                        if (self.OnCollidedEnter != null) self.OnCollidedEnter(target);
+                        if (self._OnCollidedEnter != null) self._OnCollidedEnter(target);
                     }
                 }
                 else if (self.collisionList.Contains(target)) {
                     self.collisionList.Remove(target);
-                    if (self.OnCollidedEnd != null) self.OnCollidedEnd(target);
+                    if (self._OnCollidedEnd != null) self._OnCollidedEnd(target);
                 }
             }
 
@@ -201,9 +201,9 @@ namespace CustomFramework {
                 var min = center - c.size * 0.5f;
                 var max = center + c.size * 0.5f;
 
-#if UNITY_EDITOR && DEBUG_RAYCAST
-                Debug.DrawLine(rotOrigin, rotDest, Color.blue);
-                Debug.DrawLine(rotOrigin, rotOrigin + Vector3.up, Color.yellow);
+#if UNITY_EDITOR
+                Debug.DrawLine(rotOrigin, rotDest, Color.blue, 2F);
+                Debug.DrawLine(rotOrigin, rotOrigin + Vector3.up, Color.yellow, 2F);
 
                 Debug.DrawLine(min, min + Vector3.right * c.size.x, Color.magenta);
                 Debug.DrawLine(min, min + Vector3.up * c.size.y, Color.magenta);
@@ -237,6 +237,8 @@ namespace CustomFramework {
 
                 if (tMin > distance || tyMin > distance || tzMin > distance) return false;
                 if (tMax < 0f || tyMax < 0f || tzMax < 0f) return false;
+
+
 
                 return true;
             }

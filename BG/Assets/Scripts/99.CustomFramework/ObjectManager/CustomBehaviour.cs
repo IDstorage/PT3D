@@ -38,28 +38,42 @@ public class CustomBehaviour : MonoBehaviour {
         var self = this;
 
         if (IsOverriden(this.GetType().GetMethod("OnStart"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.START);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.START);
         }
         if (IsOverriden(this.GetType().GetMethod("OnActivate")) || IsOverriden(this.GetType().GetMethod("OnDeactivate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.ACTIVATE);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.ACTIVATE);
         }
         if (IsOverriden(this.GetType().GetMethod("OnFixedUpdate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE);
         }
         if (IsOverriden(this.GetType().GetMethod("OnISOFixedUpdate"))) { 
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE_ISO);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE_ISO);
         }
         if (IsOverriden(this.GetType().GetMethod("OnUpdate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE);
         }
         if (IsOverriden(this.GetType().GetMethod("OnISOUpdate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE_ISO);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE_ISO);
         }
         if (IsOverriden(this.GetType().GetMethod("OnLateUpdate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE);
         }
         if (IsOverriden(this.GetType().GetMethod("OnISOLateUpdate"))) {
-            CustomFramework.ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE_ISO);
+            ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE_ISO);
+        }
+
+
+        if (IsOverriden(this.GetType().GetMethod("OnCollidedEnter"))) {
+            var component = GetComponent<CustomCollider>();
+            if (component != null) component._OnCollidedEnter += OnCollidedEnter;
+        }
+        if (IsOverriden(this.GetType().GetMethod("OnCollidedStay"))) {
+            var component = GetComponent<CustomCollider>();
+            if (component != null) component._OnCollidedStay += OnCollidedStay;
+        }
+        if (IsOverriden(this.GetType().GetMethod("OnCollidedEnd"))) {
+            var component = GetComponent<CustomCollider>();
+            if (component != null) component._OnCollidedEnd += OnCollidedEnd;
         }
     }
 
@@ -80,4 +94,7 @@ public class CustomBehaviour : MonoBehaviour {
     public virtual void OnLateUpdate() {}
     public virtual void OnISOLateUpdate() {}
 
+    public virtual void OnCollidedEnter(CustomCollider other) { }
+    public virtual void OnCollidedStay(CustomCollider other) { }
+    public virtual void OnCollidedEnd(CustomCollider other) { }
 }

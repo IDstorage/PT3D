@@ -29,6 +29,8 @@ namespace CustomFramework {
 
         public void AddChild(CAction act) {
             childList.Add(act);
+            act.Init();
+            act.onStart?.Invoke();
         }
 
         public override void OnUpdate() {
