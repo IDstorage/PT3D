@@ -71,15 +71,15 @@ public class PlayerWeaponControl : CustomBehaviour {
         CAction.Play(sequence);
     }
 
-    public override void OnStart() {
+    void OnStart() {
         //EquipWeapon(EWeaponType.RIFLE);
     }
 
-    public override void OnFixedUpdate() {
+    void OnFixedUpdate() {
         ControlRebound();
     }
 
-    public override void OnUpdate() {
+    void OnUpdate() {
         if (Input.GetMouseButton(0) && canShoot && currentShotDelay <= 0F) {
             if (trailAction == null) trailAction = CDelay.Create(0.05f).OnStart(() => { shotTrail.enabled = true; }).OnComplete(() => { shotTrail.enabled = false; });
             CAction.Play(trailAction);
@@ -96,7 +96,7 @@ public class PlayerWeaponControl : CustomBehaviour {
         }
     }
 
-    public override void OnLateUpdate() {
+    void OnLateUpdate() {
         //if (Input.GetKeyDown(KeyCode.Alpha1)) EquipWeapon(EWeaponType.RIFLE);
         //if (Input.GetKeyDown(KeyCode.Alpha2)) EquipWeapon(EWeaponType.CANNON);
         //if (Input.GetKeyDown(KeyCode.Alpha3)) EquipWeapon(EWeaponType.NONE);
@@ -111,7 +111,7 @@ public class PlayerWeaponControl : CustomBehaviour {
 
         Quaternion origin = transform.rotation;
         transform.rotation *= Quaternion.Inverse(transform.rotation);
-        transform.eulerAngles = root.right * radian;    
+        transform.eulerAngles = root.right * radian;
         transform.rotation *= origin;
     }
 

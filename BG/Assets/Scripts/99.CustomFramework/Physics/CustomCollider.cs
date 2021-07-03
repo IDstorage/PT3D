@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CustomFramework;
 
 public class CustomCollider : CustomBehaviour {
 
@@ -47,18 +48,14 @@ public class CustomCollider : CustomBehaviour {
 
     public HashSet<CustomCollider> collisionList = new HashSet<CustomCollider>();
 
-    public delegate void OnCollideDele(CustomCollider other);
-    public OnCollideDele _OnCollidedEnter = new OnCollideDele(o => {
+    public void BaseOnCollidedEnter(CustomCollider o) {
 #if UNITY_EDITOR
         o.boundaryColor = Color.red;
 #endif
-    });
-    public OnCollideDele _OnCollidedStay = new OnCollideDele(o => { });
-    public OnCollideDele _OnCollidedEnd = new OnCollideDele(o => {
-#if UNITY_EDITOR
-        o.boundaryColor = Color.green;
-#endif
-    });
+    }
+    public ObjectManager.CustomMethodBinder _OnCollidedEnter;
+    public ObjectManager.CustomMethodBinder _OnCollidedStay;
+    public ObjectManager.CustomMethodBinder _OnCollidedEnd;
 
 
 

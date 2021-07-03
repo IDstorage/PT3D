@@ -28,8 +28,14 @@ public class CustomBehaviour : MonoBehaviour {
     }
 
     void Initialize() {
-        bool IsOverriden(MethodInfo method) {
-            return method.GetBaseDefinition().DeclaringType != method.DeclaringType;
+        MethodInfo GetMethod(string methodName) {
+            return GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+        bool IsValidMagicFunction(MethodInfo method) {
+            return method != null && method.GetParameters().Length == 0 && method.ReturnType == typeof(void);
+        }
+        bool IsValidCollisionFunction(MethodInfo method) {
+            return method != null && method.GetParameters().Length == 1 && method.ReturnType == typeof(void) && method.GetParameters()[0].ParameterType == typeof(CustomCollider);
         }
 
         _gameObject = base.gameObject;
@@ -37,64 +43,46 @@ public class CustomBehaviour : MonoBehaviour {
         
         var self = this;
 
-        if (IsOverriden(this.GetType().GetMethod("OnStart"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.START);
+        if (IsValidMagicFunction(GetMethod("OnStart"))) {
+            ObjectManager.Register(this, GetMethod("OnStart"), ObjectManager.EFunctionType.START);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnActivate")) || IsOverriden(this.GetType().GetMethod("OnDeactivate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.ACTIVATE);
+        if (IsValidMagicFunction(GetMethod("OnActivate"))) {
+            ObjectManager.Register(this, GetMethod("OnActivate"), ObjectManager.EFunctionType.ACTIVATE);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnFixedUpdate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE);
+        if (IsValidMagicFunction(GetMethod("OnDeactivate"))) {
+            ObjectManager.Register(this, GetMethod("OnDeactivate"), ObjectManager.EFunctionType.DEACTIVATE);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnISOFixedUpdate"))) { 
-            ObjectManager.Register(this, ObjectManager.EFunctionType.FIXEDUPDATE_ISO);
+        if (IsValidMagicFunction(GetMethod("OnFixedUpdate"))) {
+            ObjectManager.Register(this, GetMethod("OnFixedUpdate"), ObjectManager.EFunctionType.FIXEDUPDATE);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnUpdate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE);
+        if (IsValidMagicFunction(GetMethod("OnISOFixedUpdate"))) { 
+            ObjectManager.Register(this, GetMethod("OnISOFixedUpdate"), ObjectManager.EFunctionType.FIXEDUPDATE_ISO);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnISOUpdate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.UPDATE_ISO);
+        if (IsValidMagicFunction(GetMethod("OnUpdate"))) {
+            ObjectManager.Register(this, GetMethod("OnUpdate"), ObjectManager.EFunctionType.UPDATE);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnLateUpdate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE);
+        if (IsValidMagicFunction(GetMethod("OnISOUpdate"))) {
+            ObjectManager.Register(this, GetMethod("OnISOUpdate"), ObjectManager.EFunctionType.UPDATE_ISO);
         }
-        if (IsOverriden(this.GetType().GetMethod("OnISOLateUpdate"))) {
-            ObjectManager.Register(this, ObjectManager.EFunctionType.LATEUPDATE_ISO);
+        if (IsValidMagicFunction(GetMethod("OnLateUpdate"))) {
+            ObjectManager.Register(this, GetMethod("OnLateUpdate"), ObjectManager.EFunctionType.LATEUPDATE);
+        }
+        if (IsValidMagicFunction(GetMethod("OnISOLateUpdate"))) {
+            ObjectManager.Register(this, GetMethod("OnISOLateUpdate"), ObjectManager.EFunctionType.LATEUPDATE_ISO);
         }
 
 
-        if (IsOverriden(this.GetType().GetMethod("OnCollidedEnter"))) {
+        if (IsValidCollisionFunction(GetMethod("OnCollidedEnter"))) {
             var component = GetComponent<CustomCollider>();
-            if (component != null) component._OnCollidedEnter += OnCollidedEnter;
+            if (component != null) component._OnCollidedEnter = new ObjectManager.CustomMethodBinder { target = this, method = GetMethod("OnCollidedEnter") };
         }
-        if (IsOverriden(this.GetType().GetMethod("OnCollidedStay"))) {
+        if (IsValidCollisionFunction(GetMethod("OnCollidedStay"))) {
             var component = GetComponent<CustomCollider>();
-            if (component != null) component._OnCollidedStay += OnCollidedStay;
+            if (component != null) component._OnCollidedStay = new ObjectManager.CustomMethodBinder { target = this, method = GetMethod("OnCollidedStay") };       
         }
-        if (IsOverriden(this.GetType().GetMethod("OnCollidedEnd"))) {
+        if (IsValidCollisionFunction(GetMethod("OnCollidedEnd"))) {
             var component = GetComponent<CustomCollider>();
-            if (component != null) component._OnCollidedEnd += OnCollidedEnd;
+            if (component != null) component._OnCollidedEnd = new ObjectManager.CustomMethodBinder { target = this, method = GetMethod("OnCollidedEnd") };
         }
     }
-
-
-    public virtual void OnStart() {}
-
-
-    public virtual void OnActivate() {}
-    public virtual void OnDeactivate() {}
-
-
-    public virtual void OnFixedUpdate() {}
-    public virtual void OnISOFixedUpdate() {}
-
-    public virtual void OnUpdate() {}
-    public virtual void OnISOUpdate() {}
-
-    public virtual void OnLateUpdate() {}
-    public virtual void OnISOLateUpdate() {}
-
-    public virtual void OnCollidedEnter(CustomCollider other) { }
-    public virtual void OnCollidedStay(CustomCollider other) { }
-    public virtual void OnCollidedEnd(CustomCollider other) { }
 }

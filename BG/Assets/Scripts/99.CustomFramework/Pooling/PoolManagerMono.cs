@@ -6,7 +6,7 @@ public class PoolManagerMono : CustomBehaviour {
 
     [SerializeField] PoolObject[] prefabs;
 
-    public override void OnActivate() {
+    void OnActivate() {
         PoolManager.Instance.Init(prefabs);
     }
 

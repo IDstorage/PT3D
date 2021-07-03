@@ -29,7 +29,7 @@ public class PlayerBodyControl : CustomBehaviour {
     Quaternion moveRayRot = Quaternion.Euler(0F, 45F, 0F);
     float moveRayDist = Mathf.Sqrt(2F) * 0.5f + 0.1f;
 
-    public override void OnUpdate() {
+    void OnUpdate() {
         float radian = (-gimbal.AzimuthValue - 90F) * Mathf.Deg2Rad;
 
         forwardVector.x = Mathf.Cos(radian);

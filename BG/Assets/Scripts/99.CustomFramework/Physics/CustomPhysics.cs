@@ -137,16 +137,16 @@ namespace CustomFramework {
             void HandleAfterCollision(CustomCollider self, CustomCollider target, bool result) {
                 if (result) {
                     if (self.collisionList.Contains(target)) {
-                        if (self._OnCollidedStay != null) self._OnCollidedStay(target);
+                        if (self._OnCollidedStay != null) self._OnCollidedStay.Invoke(target);
                     }
                     else {
                         self.collisionList.Add(target);
-                        if (self._OnCollidedEnter != null) self._OnCollidedEnter(target);
+                        if (self._OnCollidedEnter != null) self._OnCollidedEnter.Invoke(target);
                     }
                 }
                 else if (self.collisionList.Contains(target)) {
                     self.collisionList.Remove(target);
-                    if (self._OnCollidedEnd != null) self._OnCollidedEnd(target);
+                    if (self._OnCollidedEnd != null) self._OnCollidedEnd.Invoke(target);
                 }
             }
 
@@ -178,18 +178,24 @@ namespace CustomFramework {
                     continue;
                 }
 
-                if (RayWithOBB(search.collider)) {
-                    if (result == null) result = new RaycastHit() {
-                        //hitPoint = hitPoint,
-                        target = search.collider
-                    };
+                var hit = RayWithOBB(search.collider);
+                if (hit == null) {
+                    search = search.next;
+                    continue;
                 }
+
+                if (result == null) result = hit;
+
+                if ((result.hitPoint - origin).magnitude > (hit.hitPoint - origin).magnitude) {
+                    result = hit;
+                }
+
                 search = search.next;
             }
 
             return result;
 
-            bool RayWithOBB(CustomCollider c) {
+            RaycastHit RayWithOBB(CustomCollider c) {
                 var center = c.Center;
 
                 var invRot = Quaternion.Inverse(c.transform.rotation);
@@ -223,7 +229,7 @@ namespace CustomFramework {
 
                 if (tyMin > tyMax) { float temp = tyMin; tyMin = tyMax; tyMax = temp; }
 
-                if ((tMin > tyMax) || (tyMin > tMax)) return false;
+                if ((tMin > tyMax) || (tyMin > tMax)) return null;
 
                 if (tyMin > tMin) tMin = tyMin;
                 if (tyMax < tMax) tMax = tyMax;
@@ -233,14 +239,17 @@ namespace CustomFramework {
 
                 if (tzMin > tzMax) { float temp = tzMin; tzMin = tzMax; tzMax = temp; }
 
-                if ((tMin > tzMax) || (tzMin > tMax)) return false;
+                if ((tMin > tzMax) || (tzMin > tMax)) return null;
 
-                if (tMin > distance || tyMin > distance || tzMin > distance) return false;
-                if (tMax < 0f || tyMax < 0f || tzMax < 0f) return false;
+                if (tMin > distance || tyMin > distance || tzMin > distance) return null;
+                if (tMax < 0f || tyMax < 0f || tzMax < 0f) return null;
 
+                RaycastHit hit = new RaycastHit() {
+                    target = c,
+                    hitPoint = origin + dir * tzMin
+                };
 
-
-                return true;
+                return hit;
             }
 
             #region NOT USING

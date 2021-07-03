@@ -40,6 +40,7 @@ namespace CustomFramework {
 
         public bool isPlaying = false;
         public bool isPaused = false;
+        public bool isLoop = false;
 
         public float duration;
 
@@ -72,10 +73,14 @@ namespace CustomFramework {
 
         protected float timeCount = 0F;
 
-        public virtual void Init() { timeCount = 0F; }
+        public virtual void Init() { timeCount = 0F; isPaused = false; }
         public virtual bool Execute(float dt) { return true; }
         public virtual void SmoothComplete() { }
 
+        public CAction SetLoop(bool loop = false) {
+            isLoop = loop;
+            return this;
+        }
 
         void Pause() {
             isPaused = true;

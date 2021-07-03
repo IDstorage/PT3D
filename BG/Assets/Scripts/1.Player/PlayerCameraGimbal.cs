@@ -41,7 +41,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
     RaycastHit cameraBackHit;
 
 
-    public override void OnStart() {
+    void OnStart() {
         mainRootVector = -target.transform.forward;
         subBranchVector.Normalize();
         cameraQuat = Quaternion.Euler(cameraEulerAngle);
@@ -49,7 +49,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
         flexibleSubBranchLen = subBranchLength;
     }
 
-    public override void OnFixedUpdate() {
+    void OnFixedUpdate() {
         if (!disableCamBlocking) RaycastCamera();
     }
 
@@ -67,7 +67,7 @@ public class PlayerCameraGimbal : CustomBehaviour {
 #endif
     }
 
-    public override void OnUpdate() {
+    void OnUpdate() {
         float mouseH = Input.GetAxis("Mouse X");
         float mouseV = Input.GetAxis("Mouse Y");
 

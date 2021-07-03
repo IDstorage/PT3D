@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace CustomFramework {
 
@@ -8,12 +9,13 @@ namespace CustomFramework {
         // public static ObjectManager Instance => instance ?? (instance = new ObjectManager());
 
 
-        static Dictionary<EFunctionType, CustomList<CustomBehaviour>> objectList = new Dictionary<EFunctionType, CustomList<CustomBehaviour>>(new FunctionTypeExt());
+        static Dictionary<EFunctionType, CustomList<CustomMethodBinder>> objectList = new Dictionary<EFunctionType, CustomList<CustomMethodBinder>>(new FunctionTypeExt());
 
 #region For FunctionType
         public enum EFunctionType : int {
             START,
             ACTIVATE,
+            DEACTIVATE,
             FIXEDUPDATE,
             FIXEDUPDATE_ISO,
             UPDATE,
@@ -32,19 +34,27 @@ namespace CustomFramework {
             }
         }
 
+        public class CustomMethodBinder {
+            public CustomBehaviour target;
+            public MethodInfo method;
+            public bool Invoke(params object[] pl) {
+                if (target == null || method == null) return true;
+                method.Invoke(target, pl);
+                return false;
+            }
+        }
 #endregion
 
-        public static void Register(CustomBehaviour obj, EFunctionType type) {
+        public static void Register(CustomBehaviour obj, MethodInfo m, EFunctionType type) {
             if (obj == null) return;
-            if (!objectList.ContainsKey(type)) objectList.Add(type, CustomList<CustomBehaviour>.Create(obj));
-            else objectList[type].Add(obj);
-            if (type == EFunctionType.START) obj.OnStart();
+            if (!objectList.ContainsKey(type)) objectList.Add(type, CustomList<CustomMethodBinder>.Create(new CustomMethodBinder() { target = obj, method = m }));
+            else objectList[type].Add(new CustomMethodBinder() { target = obj, method = m });
+            if (type == EFunctionType.START) m.Invoke(obj, null);
         }
+        
 
-
-        static bool IsNull(EFunctionType type, CustomList<CustomBehaviour> target) {
+        static bool IsNull(EFunctionType type, CustomList<CustomMethodBinder> target) {
             if (!objectList.ContainsKey(type)) return true;
-            
             return false;
         }
 
@@ -52,19 +62,22 @@ namespace CustomFramework {
         public static void CheckActivation() {
             if (!objectList.ContainsKey(EFunctionType.ACTIVATE)) return;
 
-            CustomList<CustomBehaviour> search = objectList[EFunctionType.ACTIVATE];
+            CustomList<CustomMethodBinder> search = objectList[EFunctionType.ACTIVATE];
             while (search != null) {
-                if (IsNull(EFunctionType.ACTIVATE, search)) continue;
+                //if (IsNull(EFunctionType.ACTIVATE, search)) continue;
 
                 var target = search.data;
-                bool activeInHierarchy = target.gameObject.activeInHierarchy;
+                bool activeInHierarchy = target.target.gameObject.activeInHierarchy;
 
-                if (target.cachedActiveFlag == activeInHierarchy) continue;
+                if (target.target.cachedActiveFlag == activeInHierarchy) {
+                    search = search.next;
+                    continue;
+                }
 
-                if (activeInHierarchy) target.OnActivate();
-                else target.OnDeactivate();
+                if (activeInHierarchy) target.Invoke();
+                else target.Invoke();
 
-                target.cachedActiveFlag = activeInHierarchy;
+                target.target.cachedActiveFlag = activeInHierarchy;
 
                 search = search.next;
             }
@@ -73,46 +86,33 @@ namespace CustomFramework {
 
         public static void FixedUpdate() {
             CustomPhysics.Update();
-            UpdateLoop(EFunctionType.FIXEDUPDATE);
+            UpdateLoop(EFunctionType.FIXEDUPDATE, false);
+            UpdateLoop(EFunctionType.FIXEDUPDATE_ISO, true);
         }
 
         public static void Update() {
-            UpdateLoop(EFunctionType.UPDATE);
+            UpdateLoop(EFunctionType.UPDATE, false);
+            UpdateLoop(EFunctionType.UPDATE_ISO, true);
         }
 
         public static void LateUpdate() {
-            UpdateLoop(EFunctionType.LATEUPDATE);
+            UpdateLoop(EFunctionType.LATEUPDATE, false);
+            UpdateLoop(EFunctionType.LATEUPDATE_ISO, true);
         }
 
-        static void UpdateLoop(EFunctionType type) {
-            CustomList<CustomBehaviour> search = objectList.ContainsKey(type) ? objectList[type] : null;
+        static void UpdateLoop(EFunctionType type, bool isIsolated) {
+            CustomList<CustomMethodBinder> search = objectList.ContainsKey(type) ? objectList[type] : null;
             while (search != null) {
-                if (IsNull(type, search)) continue;
+                //if (IsNull(type, search)) continue;
 
                 var target = search.data;
 
-                if (target.gameObject.activeInHierarchy == false) continue;
+                if (target.target.gameObject.activeInHierarchy == false && !isIsolated) {
+                    search = search.next;
+                    continue;
+                }
 
-                if (type == EFunctionType.FIXEDUPDATE) target.OnFixedUpdate();
-                else if (type == EFunctionType.UPDATE) target.OnUpdate();
-                else if (type == EFunctionType.LATEUPDATE) target.OnLateUpdate();
-
-                search = search.next;
-            }
-
-            var isoType = type + 1;
-            search = objectList.ContainsKey(isoType) ? objectList[isoType] : null;
-            while (search != null)
-            {
-                if (IsNull(isoType, search)) continue;
-
-                var target = search.data;
-
-                if (target.gameObject.activeInHierarchy == false) continue;
-
-                if (type == EFunctionType.FIXEDUPDATE) target.OnISOFixedUpdate();
-                else if (type == EFunctionType.UPDATE) target.OnISOUpdate();
-                else if (type == EFunctionType.LATEUPDATE) target.OnISOLateUpdate();
+                target.Invoke();
 
                 search = search.next;
             }

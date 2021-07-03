@@ -33,7 +33,7 @@ public class CullingBehaviour : CustomBehaviour {
         };
     }
 
-    public override void OnUpdate() {
+    void OnUpdate() {
     //public void Update() {
         //gameObject.SetActive(CustomFramework.OcclusionCullingManager.Culling(this, cam));
         if (renderer == null) renderer = GetComponent<MeshRenderer>();

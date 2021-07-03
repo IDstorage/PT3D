@@ -15,7 +15,7 @@ MonoBehaviour:
   MoveSpeed: 5
   JumpPower: 3
   GravityScale: 1
-  MouseSpeedHorizontal: 360
-  MouseSpeedVertical: 360
+  MouseSpeedHorizontal: 90
+  MouseSpeedVertical: 90
   PointDistance: 15
-  CameraLimit: {x: 25, y: 120}
+  CameraLimit: {x: 80, y: 100}

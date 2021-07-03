@@ -20,7 +20,7 @@ namespace CustomFramework {
 
         [SerializeField] AnimationCurve[] curves;
 
-        public override void OnStart() {
+        void OnStart() {
             DontDestroyOnLoad(this);
             for (int i = 0; i < curves.Length; ++i) {
                 CAction.curveDictionary.Add((EEaseAction)i, curves[i]);
@@ -33,13 +33,20 @@ namespace CustomFramework {
             act.onStart?.Invoke();
         }
 
-        public override void OnUpdate() {
+        void OnUpdate() {
             for (int i = 0; i < childList.Count; ++i) {
                 childList[i].onBeforeStep?.Invoke();
                 if (!childList[i].Execute(Time.deltaTime)) {
                     childList[i].onAfterStep?.Invoke();
                     continue;
                 }
+
+                if (childList[i].isLoop) {
+                    childList[i].SmoothComplete();
+                    childList[i].Init();
+                    continue;
+                }
+
                 childList[i].onAfterStep?.Invoke();
                 childList[i].SmoothComplete();
                 childList[i].onComplete?.Invoke();
